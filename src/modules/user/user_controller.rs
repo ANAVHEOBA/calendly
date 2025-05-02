@@ -1,4 +1,4 @@
-use actix_web::{web, HttpResponse};
+use actix_web::{web, HttpResponse, HttpRequest, HttpMessage};
 use chrono::{Duration, Utc};
 use jsonwebtoken::{encode, EncodingKey, Header};
 use rand::{thread_rng, Rng};
@@ -38,7 +38,7 @@ impl UserController {
 
     fn generate_jwt(&self, user: &User) -> Result<String, AppError> {
         let expiration = Utc::now()
-            .checked_add_signed(Duration::minutes(15))
+            .checked_add_signed(Duration::days(7))
             .expect("valid timestamp")
             .timestamp();
 
@@ -65,12 +65,11 @@ impl UserController {
         token
     }
 
-    fn generate_verification_token() -> String {
+    fn generate_verification_code() -> String {
         let mut rng = thread_rng();
-        let token: String = (0..32)
-            .map(|_| rng.sample(rand::distributions::Alphanumeric) as char)
-            .collect();
-        token
+        (0..6)
+            .map(|_| rng.sample(rand::distributions::Uniform::new(0, 10)).to_string())
+            .collect()
     }
 
     pub async fn register(
@@ -79,7 +78,7 @@ impl UserController {
     ) -> Result<HttpResponse, AppError> {
         // Check if user already exists
         if let Some(_) = self.repository.find_by_email(&user_data.email).await? {
-            return Ok(HttpResponse::BadRequest().json("Email already registered"));
+            return Err(AppError::BadRequest("Email already registered".to_string()));
         }
 
         // Hash password
@@ -93,21 +92,24 @@ impl UserController {
             user_data.name.clone(),
         );
 
-        // Generate verification token
-        let verification_token = Self::generate_verification_token();
-        user.set_verification_token(verification_token.clone());
+        // Generate 6-digit verification code
+        let verification_code = Self::generate_verification_code();
+        user.set_verification_token(verification_code.clone());
 
         let created_user = self.repository.create(user).await?;
 
         // Send verification email
-        self.email_service.send_verification_email(&created_user.email, &verification_token).await?;
+        self.email_service.send_verification_email(&created_user.email, &verification_code).await?;
 
-        Ok(HttpResponse::Created().json(UserResponse {
-            id: created_user.id.unwrap().to_hex(),
-            email: created_user.email,
-            name: created_user.name,
-            is_verified: created_user.is_verified,
-        }))
+        Ok(HttpResponse::Created().json(serde_json::json!({
+            "message": "Registration successful! Please check your email for a verification code.",
+            "user": {
+                "id": created_user.id.unwrap().to_hex(),
+                "email": created_user.email,
+                "name": created_user.name,
+                "is_verified": created_user.is_verified
+            }
+        })))
     }
 
     pub async fn login(
@@ -194,7 +196,7 @@ impl UserController {
             .await?
             .ok_or_else(|| AppError::NotFound("User not found".to_string()))?;
 
-        let reset_token = Self::generate_verification_token();
+        let reset_token = Self::generate_verification_code();
         user.set_password_reset_token(reset_token.clone());
         
         self.repository.update(&user.id.unwrap().to_hex(), &user).await?;
@@ -233,6 +235,27 @@ impl UserController {
 
         Ok(HttpResponse::Ok().json(VerificationResponse {
             message: "Password reset successful".to_string(),
+        }))
+    }
+
+    pub async fn get_current_user(&self, req: HttpRequest) -> Result<HttpResponse, AppError> {
+        // Get claims from request extensions (set by AuthMiddleware)
+        let extensions = req.extensions();
+        let claims = extensions
+            .get::<Claims>()
+            .ok_or_else(|| AppError::Unauthorized("Not authenticated".to_string()))?;
+
+        // Find user by ID
+        let user = self.repository
+            .find_by_id(&claims.sub)
+            .await?
+            .ok_or_else(|| AppError::NotFound("User not found".to_string()))?;
+
+        Ok(HttpResponse::Ok().json(UserResponse {
+            id: user.id.unwrap().to_hex(),
+            email: user.email,
+            name: user.name,
+            is_verified: user.is_verified,
         }))
     }
 }

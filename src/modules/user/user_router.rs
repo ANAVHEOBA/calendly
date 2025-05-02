@@ -1,12 +1,13 @@
-use actix_web::{web, Scope};
+use actix_web::{web, Scope, HttpRequest};
 use crate::modules::user::user_controller::UserController;
 use crate::errors::error::AppError;
+use crate::middleware::auth::AuthMiddleware;
 
 pub fn user_routes() -> Result<Scope, AppError> {
     let controller = UserController::new()?;
     let controller = web::Data::new(controller);
     
-    Ok(web::scope("/api/users")
+    Ok(web::scope("/users")
         .app_data(controller.clone())
         .service(
             web::resource("/register")
@@ -32,7 +33,6 @@ pub fn user_routes() -> Result<Scope, AppError> {
                     async move { controller.refresh_token(data).await }
                 }))
         )
-
         .service(
             web::resource("/forgot-password")
                 .route(web::post().to(|data, controller: web::Data<UserController>| {
@@ -43,6 +43,13 @@ pub fn user_routes() -> Result<Scope, AppError> {
             web::resource("/reset-password")
                 .route(web::post().to(|data, controller: web::Data<UserController>| {
                     async move { controller.reset_password(data).await }
+                }))
+        )
+        .service(
+            web::resource("/me")
+                .wrap(AuthMiddleware)
+                .route(web::get().to(|req: HttpRequest, controller: web::Data<UserController>| {
+                    async move { controller.get_current_user(req).await }
                 }))
         ))
 }

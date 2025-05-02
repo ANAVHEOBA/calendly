@@ -21,3 +21,4 @@ lettre = { version = "0.10", features = ["tokio1", "tokio1-native-tls"] }
 derive_more = "0.99"
 actix-cors = "0.6"
 env_logger = "0.10"
+validator = { version = "0.20.0", features = ["derive"] }

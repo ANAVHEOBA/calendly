@@ -28,7 +28,7 @@ pub struct AuthResponse {
     pub user: UserResponse,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Claims {
     pub sub: String,  // user id
     pub exp: i64,     // expiration time

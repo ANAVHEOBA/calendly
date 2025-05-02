@@ -3,6 +3,7 @@ use actix_cors::Cors;
 use mongodb::{Client, Database};
 use crate::config::environment::Environment;
 use crate::modules::user::user_router::user_routes;
+use crate::modules::calendar::calendar_router::calendar_routes;
 use crate::errors::error::AppError;
 use std::sync::OnceLock;
 
@@ -24,6 +25,8 @@ pub async fn create_app() -> Result<(), AppError> {
     dotenv::dotenv().ok();
     let env = Environment::load();
     
+    println!("Starting server configuration...");
+    
     // Initialize database
     let client = Client::with_uri_str(&env.mongodb_uri)
         .await
@@ -37,10 +40,14 @@ pub async fn create_app() -> Result<(), AppError> {
         .await
         .map_err(|e| AppError::InternalServerError(format!("Failed to ping database: {}", e)))?;
     
+    println!("Database connection successful");
+    
     // Initialize global AppState
     APP_STATE.set(AppState { db: db.clone() }).expect("Failed to set AppState");
     
     let app_state = web::Data::new(AppState { db });
+
+    println!("Starting HTTP server on port {}", env.port);
 
     // Create HTTP server
     HttpServer::new(move || {
@@ -58,12 +65,22 @@ pub async fn create_app() -> Result<(), AppError> {
                 web::scope("/api")
                     .configure(|cfg| {
                         if let Ok(routes) = user_routes() {
+                            println!("User routes configured successfully");
                             cfg.service(routes);
+                        } else {
+                            println!("Failed to configure user routes");
+                        }
+                        
+                        if let Ok(routes) = calendar_routes() {
+                            println!("Calendar routes configured successfully");
+                            cfg.service(routes);
+                        } else {
+                            println!("Failed to configure calendar routes");
                         }
                     })
             )
     })
-    .bind(("127.0.0.1", env.port))?
+    .bind(("0.0.0.0", env.port))?
     .run()
     .await
     .map_err(|e| AppError::InternalServerError(e.to_string()))

@@ -22,6 +22,9 @@ pub enum AppError {
 
     #[display(fmt = "Email Error: {}", _0)]
     EmailError(String),
+
+    #[display(fmt = "Validation Error: {}", _0)]
+    ValidationError(String),
 }
 
 impl ResponseError for AppError {
@@ -37,6 +40,7 @@ impl ResponseError for AppError {
                 HttpResponse::InternalServerError().json("Database Error")
             }
             AppError::EmailError(msg) => HttpResponse::InternalServerError().json(msg),
+            AppError::ValidationError(msg) => HttpResponse::BadRequest().json(msg),
         }
     }
 }

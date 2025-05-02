@@ -32,21 +32,22 @@ impl EmailService {
     pub async fn send_verification_email(
         &self,
         to_email: &str,
-        token: &str,
+        code: &str,
     ) -> Result<(), AppError> {
-        let verification_url = format!("http://localhost:3000/verify-email?token={}", token);
-        
         let email = Message::builder()
             .from(self.from_email.parse().unwrap())
             .to(to_email.parse().unwrap())
-            .subject("Verify your email")
+            .subject("Your Calendly Verification Code")
             .body(format!(
                 r#"
                 <h1>Welcome to Calendly!</h1>
-                <p>Please click the link below to verify your email address:</p>
-                <a href="{}">Verify Email</a>
+                <p>Your verification code is:</p>
+                <h2 style="font-size: 24px; padding: 10px; background-color: #f5f5f5; text-align: center;">{}</h2>
+                <p>Please enter this code to verify your email address.</p>
+                <p>This code will expire in 30 minutes.</p>
+                <p>If you didn't create a Calendly account, please ignore this email.</p>
                 "#,
-                verification_url
+                code
             ))
             .map_err(|e| AppError::EmailError(e.to_string()))?;
 
@@ -60,22 +61,22 @@ impl EmailService {
     pub async fn send_password_reset_email(
         &self,
         to_email: &str,
-        token: &str,
+        code: &str,
     ) -> Result<(), AppError> {
-        let reset_url = format!("http://localhost:3000/reset-password?token={}", token);
-        
         let email = Message::builder()
             .from(self.from_email.parse().unwrap())
             .to(to_email.parse().unwrap())
-            .subject("Reset your password")
+            .subject("Reset Your Calendly Password")
             .body(format!(
                 r#"
-                <h1>Password Reset Request</h1>
-                <p>Click the link below to reset your password:</p>
-                <a href="{}">Reset Password</a>
-                <p>If you didn't request this, please ignore this email.</p>
+                <h1>Password Reset Code</h1>
+                <p>Your password reset code is:</p>
+                <h2 style="font-size: 24px; padding: 10px; background-color: #f5f5f5; text-align: center;">{}</h2>
+                <p>Enter this code to reset your password.</p>
+                <p>This code will expire in 30 minutes.</p>
+                <p>If you didn't request a password reset, please ignore this email.</p>
                 "#,
-                reset_url
+                code
             ))
             .map_err(|e| AppError::EmailError(e.to_string()))?;
 
