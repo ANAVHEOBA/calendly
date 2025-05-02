@@ -1,0 +1,23 @@
+[package]
+name = "calendly"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+actix-web = "4"
+mongodb = "2.8"
+tokio = { version = "1.36", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+dotenv = "0.15"
+futures = "0.3"
+async-trait = "0.1"
+thiserror = "1.0"
+bcrypt = "0.15"
+jsonwebtoken = "9.2"
+chrono = { version = "0.4", features = ["serde"] }
+rand = "0.8"
+lettre = { version = "0.10", features = ["tokio1", "tokio1-native-tls"] }
+derive_more = "0.99"
+actix-cors = "0.6"
+env_logger = "0.10"
