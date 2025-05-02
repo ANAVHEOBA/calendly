@@ -151,6 +151,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Contact
 
-Your Name - your.email@example.com
+Abraham Anavheoba - wisdomabraham92@gmail.com
 
-Project Link: [https://github.com/yourusername/calendly](https://github.com/yourusername/calendly)
+Project Link: [https://github.com/anavheoba/calendly](https://github.com/anavheoba/calendly)
