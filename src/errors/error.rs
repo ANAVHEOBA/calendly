@@ -50,9 +50,9 @@ impl From<MongoError> for AppError {
         AppError::DatabaseError(error.to_string())
     }
 }
+
 impl From<std::io::Error> for AppError {
     fn from(error: std::io::Error) -> Self {
         AppError::InternalServerError(error.to_string())
     }
 }
-

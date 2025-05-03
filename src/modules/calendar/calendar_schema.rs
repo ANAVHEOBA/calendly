@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use validator::Validate;
-use crate::modules::calendar::calendar_model::{TimeSlot, BufferTime};
+use mongodb::bson::DateTime;
+use crate::modules::calendar::calendar_model::{TimeSlot, BufferTime, AvailabilityRule, AvailabilitySlot};
 
 #[derive(Debug, Serialize, Deserialize, Validate)]
 pub struct CreateCalendarSettingsRequest {
@@ -32,4 +33,49 @@ pub struct CalendarSettingsResponse {
     pub time_format: String,
     pub created_at: String,
     pub updated_at: String,
+}
+
+#[derive(Debug, Serialize, Deserialize, Validate)]
+pub struct CreateAvailabilityRuleRequest {
+    pub start_date: String,  // ISO 8601 format
+    pub end_date: Option<String>,  // ISO 8601 format
+    pub is_recurring: bool,
+    pub recurrence_pattern: Option<String>,
+    pub slots: Vec<AvailabilitySlot>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Validate)]
+pub struct CreateAvailabilityRequest {
+    pub calendar_settings_id: String,
+    #[validate(length(min = 1, message = "At least one availability rule is required"))]
+    pub rules: Vec<CreateAvailabilityRuleRequest>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct AvailabilityResponse {
+    pub id: String,
+    pub user_id: String,
+    pub calendar_settings_id: String,
+    pub rules: Vec<AvailabilityRule>,
+    pub created_at: String,
+    pub updated_at: String,
+}
+
+#[derive(Debug, Serialize, Deserialize, Validate)]
+pub struct CheckAvailabilityRequest {
+    pub start_date: String,  // ISO 8601 format
+    pub end_date: String,    // ISO 8601 format
+    pub duration: i32,       // minutes
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, Ord, PartialOrd, Eq, PartialEq)]
+pub struct AvailableTimeSlot {
+    pub date: String,        // YYYY-MM-DD format
+    pub start_time: String,  // HH:mm format
+    pub end_time: String,    // HH:mm format
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct CheckAvailabilityResponse {
+    pub available_slots: Vec<AvailableTimeSlot>,
 }
