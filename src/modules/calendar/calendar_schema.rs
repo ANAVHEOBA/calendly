@@ -1,8 +1,8 @@
-use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
+use std::collections::HashMap;use serde::{Deserialize, Serialize};
 use validator::Validate;
-use mongodb::bson::DateTime;
-use crate::modules::calendar::calendar_model::{TimeSlot, BufferTime, AvailabilityRule, AvailabilitySlot};
+use crate::modules::calendar::calendar_model::{
+    AvailabilityRule, BufferTime, TimeSlot, AvailabilitySlot
+};
 
 #[derive(Debug, Serialize, Deserialize, Validate)]
 pub struct CreateCalendarSettingsRequest {
@@ -79,3 +79,84 @@ pub struct AvailableTimeSlot {
 pub struct CheckAvailabilityResponse {
     pub available_slots: Vec<AvailableTimeSlot>,
 }
+
+#[derive(Debug, Serialize, Deserialize, Validate)]
+pub struct UpdateAvailabilityRequest {
+    #[validate(length(min = 1, message = "At least one availability rule is required"))]
+    pub rules: Vec<CreateAvailabilityRuleRequest>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Validate)]
+pub struct CheckTimeSlotRequest {
+    pub date: String,         // YYYY-MM-DD format
+    pub start_time: String,   // HH:mm format
+    pub end_time: String,     // HH:mm format
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct CheckTimeSlotResponse {
+    pub is_available: bool,
+    pub conflicts: Option<Vec<String>>,  // Reasons why the slot is not available, if any
+}
+
+#[derive(Debug, Serialize, Deserialize, Validate)]
+pub struct CreateEventTypeRequest {
+    #[validate(length(min = 1, message = "Name is required"))]
+    pub name: String,
+    pub description: Option<String>,
+    #[validate(range(min = 15, max = 480, message = "Duration must be between 15 and 480 minutes"))]
+    pub duration: i32,
+    #[validate(length(min = 1, message = "Color is required"))]
+    pub color: String,
+    #[validate(length(min = 1, message = "Location type is required"))]
+    pub location_type: String,
+    pub meeting_link: Option<String>,
+    pub questions: Vec<String>,
+    #[validate(length(min = 1, message = "Availability schedule ID is required"))]
+    pub availability_schedule_id: String,
+    pub buffer_time: Option<BufferTime>,
+    pub min_booking_notice: Option<i32>,
+    pub max_booking_notice: Option<i32>,
+    pub is_active: bool,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct EventTypeResponse {
+    pub id: String,
+    pub user_id: String,
+    pub name: String,
+    pub description: Option<String>,
+    pub duration: i32,
+    pub color: String,
+    pub location_type: String,
+    pub meeting_link: Option<String>,
+    pub questions: Vec<String>,
+    pub availability_schedule_id: String,
+    pub buffer_time: Option<BufferTime>,
+    pub min_booking_notice: Option<i32>,
+    pub max_booking_notice: Option<i32>,
+    pub is_active: bool,
+    pub created_at: String,
+    pub updated_at: String,
+}
+
+#[derive(Debug, Serialize, Deserialize, Validate)]
+pub struct UpdateEventTypeRequest {
+    #[validate(length(min = 1, message = "Name is required"))]
+    pub name: Option<String>,
+    pub description: Option<String>,
+    #[validate(range(min = 15, max = 480, message = "Duration must be between 15 and 480 minutes"))]
+    pub duration: Option<i32>,
+    #[validate(length(min = 1, message = "Color is required"))]
+    pub color: Option<String>,
+    #[validate(length(min = 1, message = "Location type is required"))]
+    pub location_type: Option<String>,
+    pub meeting_link: Option<String>,
+    pub questions: Option<Vec<String>>,
+    pub buffer_time: Option<BufferTime>,
+    pub min_booking_notice: Option<i32>,
+    pub max_booking_notice: Option<i32>,
+    pub is_active: Option<bool>,
+}
+
+

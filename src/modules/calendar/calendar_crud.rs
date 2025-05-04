@@ -4,7 +4,7 @@ use mongodb::{
 };
 use futures::TryStreamExt;
 use crate::errors::error::AppError;
-use crate::modules::calendar::calendar_model::{CalendarSettings, Availability};
+use crate::modules::calendar::calendar_model::{CalendarSettings, Availability, EventType};
 
 
 pub struct CalendarSettingsRepository {
@@ -160,5 +160,82 @@ impl AvailabilityRepository {
         }
 
         Ok(availabilities)
+    }
+
+    pub async fn find_by_id(&self, id: &ObjectId) -> Result<Option<Availability>, AppError> {
+        self.collection
+            .find_one(doc! { "_id": id }, None)
+            .await
+            .map_err(|e| AppError::DatabaseError(e.to_string()))
+    }
+}
+
+pub struct EventTypeRepository {
+    collection: Collection<EventType>,
+}
+
+impl EventTypeRepository {
+    pub fn new(db: Database) -> Self {
+        let collection = db.collection("event_types");
+        Self { collection }
+    }
+
+    pub async fn create(&self, event_type: EventType) -> Result<EventType, AppError> {
+        let mut event_type = event_type;
+        event_type.created_at = DateTime::now();
+        event_type.updated_at = DateTime::now();
+
+        let result = self.collection
+            .insert_one(&event_type, None)
+            .await
+            .map_err(|e| AppError::DatabaseError(e.to_string()))?;
+
+        event_type.id = Some(result.inserted_id.as_object_id().unwrap());
+        Ok(event_type)
+    }
+
+    pub async fn find_by_user_id(&self, user_id: &ObjectId) -> Result<Vec<EventType>, AppError> {
+        let mut event_types = Vec::new();
+        let mut cursor = self.collection
+            .find(doc! { "user_id": user_id }, None)
+            .await
+            .map_err(|e| AppError::DatabaseError(e.to_string()))?;
+
+        while let Some(event_type) = cursor.try_next().await
+            .map_err(|e| AppError::DatabaseError(e.to_string()))? {
+            event_types.push(event_type);
+        }
+
+        Ok(event_types)
+    }
+
+    pub async fn find_by_id(&self, id: &ObjectId) -> Result<Option<EventType>, AppError> {
+        self.collection
+            .find_one(doc! { "_id": id }, None)
+            .await
+            .map_err(|e| AppError::DatabaseError(e.to_string()))
+    }
+
+    pub async fn update(&self, id: &ObjectId, event_type: EventType) -> Result<Option<EventType>, AppError> {
+        let mut event_type = event_type;
+        event_type.updated_at = DateTime::now();
+
+        let result = self.collection
+            .find_one_and_replace(
+                doc! { "_id": id },
+                &event_type,
+                None
+            )
+            .await
+            .map_err(|e| AppError::DatabaseError(e.to_string()))?;
+
+        Ok(result)
+    }
+
+    pub async fn delete(&self, id: &ObjectId) -> Result<Option<EventType>, AppError> {
+        self.collection
+            .find_one_and_delete(doc! { "_id": id }, None)
+            .await
+            .map_err(|e| AppError::DatabaseError(e.to_string()))
     }
 }

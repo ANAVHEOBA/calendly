@@ -78,5 +78,26 @@ pub struct Availability {
     pub rules: Vec<AvailabilityRule>,
     pub created_at: DateTime,
     pub updated_at: DateTime,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct EventType {
+    #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
+    pub id: Option<ObjectId>,
+    pub user_id: ObjectId,
+    pub name: String,
+    pub description: Option<String>,
+    pub duration: i32,
+    pub color: String,
+    pub location_type: String,
+    pub meeting_link: Option<String>,
+    pub questions: Vec<String>,
+    pub availability_schedule_id: ObjectId,
+    pub buffer_time: Option<BufferTime>,
+    pub min_booking_notice: Option<i32>,
+    pub max_booking_notice: Option<i32>,
+    pub is_active: bool,
+    pub created_at: DateTime,
+    pub updated_at: DateTime,
 } 
  

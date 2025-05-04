@@ -74,3 +74,132 @@ a@a:~/calendly$ curl -X POST http://127.0.0.1:8080/api/calendar/check-availabili
 
 
 
+a@a:~/calendly$ curl -X PUT http://127.0.0.1:8080/api/calendar/availability/681628e3a54ce4c0f040df10 -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2ODE0ZjE2N2QyMjY1YjNiNGExZDZmOTciLCJleHAiOjE3NDY4MTc1MTgsImlhdCI6MTc0NjIxMjcxOCwiZW1haWwiOiJhbmF2aGVvYmFhYnJhaGFtQGdtYWlsLmNvbSJ9.KlPxzoAHFEPAEyW6prybtZhRDuGoUpm7QsyQSP4g7VA" -H "Content-Type: application/json" -d '{"rules": [{"start_date": "2024-03-20T00:00:00Z","end_date": null,"is_recurring": true,"recurrence_pattern": "weekly","slots": [{"day_of_week": "monday","start_time": "09:00","end_time": "17:00","is_available": true}]}]}'
+{"id":"681628e3a54ce4c0f040df10","user_id":"6814f167d2265b3b4a1d6f97","calendar_settings_id":"6815186a02743543884ca3e5","rules":[{"start_date":{"$date":{"$numberLong":"1710892800000"}},"end_date":null,"is_recurring":true,"recurrence_pattern":"weekly","slots":[{"day_of_week":"monday","start_time":"10:00","end_time":"18:00","is_available":true},{"day_of_week":"tuesday","start_time":"10:00","end_time":"18:00","is_available":true},{"day_of_week":"wednesday","start_time":"10:00","end_time":"18:00","is_available":true},{"day_of_week":"thursday","start_time":"10:00","end_time":"18:00","is_available":true},{"day_of_week":"friday","start_time":"10:00","end_time":"18:00","is_available":true}]}],"created_at":"2025-05-03 14:32:03.475 +00:00:00","updated_at":"2025-05-03 14:32:03.475 +00:00:00"}a@a:~/calendly$ 
+
+
+
+
+
+
+
+
+
+
+
+
+a@a:~/calendly$ curl -X DELETE http://127.0.0.1:8080/api/calendar/availability/681628e3a54ce4c0f040df10 -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2ODE0ZjE2N2QyMjY1YjNiNGExZDZmOTciLCJleHAiOjE3NDY4MTc1MTgsImlhdCI6MTc0NjIxMjcxOCwiZW1haWwiOiJhbmF2aGVvYmFhYnJhaGFtQGdtYWlsLmNvbSJ9.KlPxzoAHFEPAEyW6prybtZhRDuGoUpm7QsyQSP4g7VA"
+{"message":"Availability deleted successfully"}a@a:~/calendly$ 
+
+
+
+
+
+
+a@a:~/calendly$ curl -X POST http://127.0.0.1:8080/api/calendar/availability -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2ODE0ZjE2N2QyMjY1YjNiNGExZDZmOTciLCJleHAiOjE3NDY4MTc1MTgsImlhdCI6MTc0NjIxMjcxOCwiZW1haWwiOiJhbmF2aGVvYmFhYnJhaGFtQGdtYWlsLmNvbSJ9.KlPxzoAHFEPAEyW6prybtZhRDuGoUpm7QsyQSP4g7VA" -H "Content-Type: application/json" -d '{"calendar_settings_id": "6815186a02743543884ca3e5", "rules": [{"start_date": "2024-03-20T00:00:00Z","end_date": null,"is_recurring": true,"recurrence_pattern": "weekly","slots": [{"day_of_week": "wednesday","start_time": "09:00","end_time": "17:00","is_available": true}]}]}'
+{"id":"68163f8871afc8750c86dda6","user_id":"6814f167d2265b3b4a1d6f97","calendar_settings_id":"6815186a02743543884ca3e5","rules":[{"start_date":{"$date":{"$numberLong":"1710892800000"}},"end_date":null,"is_recurring":true,"recurrence_pattern":"weekly","slots":[{"day_of_week":"wednesday","start_time":"09:00","end_time":"17:00","is_available":true}]}],"created_at":"2025-05-03 16:08:40.131 +00:00:00","updated_at":"2025-05-03 16:08:40.131 +00:00:00"}a@a:~/calendly$ 
+
+
+
+
+
+
+
+
+
+
+a@a:~/calendly$ curl -X GET http://127.0.0.1:8080/api/calendar/settings -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2ODE0ZjE2N2QyMjY1YjNiNGExZDZmOTciLCJleHAiOjE3NDY4MTc1MTgsImlhdCI6MTc0NjIxMjcxOCwiZW1haWwiOiJhbmF2aGVvYmFhYnJhaGFtQGdtYWlsLmNvbSJ9.KlPxzoAHFEPAEyW6prybtZhRDuGoUpm7QsyQSP4g7VA"
+{"id":"6815186a02743543884ca3e5","user_id":"6814f167d2265b3b4a1d6f97","timezone":"UTC+1","working_hours":{"monday":[{"start":"10:00","end":"18:00"}],"tuesday":[{"start":"10:00","end":"18:00"}],"wednesday":[{"start":"10:00","end":"18:00"}],"friday":[{"start":"10:00","end":"18:00"}],"thursday":[{"start":"10:00","end":"18:00"}]},"buffer_time":{"before":10,"after":10},"default_meeting_duration":45,"calendar_name":"My Professional Calendar","date_format":"DD/MM/YYYY","time_format":"12h","created_at":"2025-05-02 19:09:30.209 +00:00:00","updated_at":"2025-05-02 19:09:30.209 +00:00:00"}a@a:~/calendly$ 
+
+
+
+
+
+
+
+
+
+
+
+a@a:~/calendly$ curl -X POST http://127.0.0.1:8080/api/calendar/availability/check -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2ODE0ZjE2N2QyMjY1YjNiNGExZDZmOTciLCJleHAiOjE3NDY4MTc1MTgsImlhdCI6MTc0NjIxMjcxOCwiZW1haWwiOiJhbmF2aGVvYmFhYnJhaGFtQGdtYWlsLmNvbSJ9.KlPxzoAHFEPAEyW6prybtZhRDuGoUpm7QsyQSP4g7VA" -H "Content-Type: application/json" -d '{"date": "2024-03-20","start_time": "10:00","end_time": "11:00"}'
+{"is_available":true,"conflicts":null}a@a:~/calendly$ 
+
+
+
+
+
+
+
+
+a@a:~/calendly$ curl -X POST http://127.0.0.1:8080/api/calendar/event-types   -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2ODE0ZjE2N2QyMjY1YjNiNGExZDZmOTciLCJleHAiOjE3NDY4MTc1MTgsImlhdCI6MTc0NjIxMjcxOCwiZW1haWwiOiJhbmF2aGVvYmFhYnJhaGFtQGdtYWlsLmNvbSJ9.KlPxzoAHFEPAEyW6prybtZhRDuGoUpm7QsyQSP4g7VA"   -H "Content-Type: application/json"   -d '{
+    "name": "30 Minute Meeting",
+    "description": "A quick 30-minute meeting",
+    "duration": 30,
+    "color": "#FF0000",
+    "location_type": "video",
+    "meeting_link": "https://meet.google.com/abc-defg-hij",
+    "questions": ["What is the purpose of this meeting?"],
+    "availability_schedule_id": "68163f8871afc8750c86dda6",
+    "buffer_time": {
+      "before": 5,
+      "after": 5
+    },
+    "min_booking_notice": 60,
+    "max_booking_notice": 1440,
+    "is_active": true
+  }'
+{"id":"68171175b9fe46d77a759e0e","user_id":"6814f167d2265b3b4a1d6f97","name":"30 Minute Meeting","description":"A quick 30-minute meeting","duration":30,"color":"#FF0000","location_type":"video","meeting_link":"https://meet.google.com/abc-defg-hij","questions":["What is the purpose of this meeting?"],"availability_schedule_id":"68163f8871afc8750c86dda6","buffer_time":{"before":5,"after":5},"min_booking_notice":60,"max_booking_notice":1440,"is_active":true,"created_at":"2025-05-04 7:04:21.582 +00:00:00","updated_at":"2025-05-04 7:04:21.582 +00:00:00"}a@a:~/calendly$ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+a@a:~/calendly$ curl -X GET http://127.0.0.1:8080/api/calendar/event-types \
+  -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2ODE0ZjE2N2QyMjY1YjNiNGExZDZmOTciLCJleHAiOjE3NDY4MTc1MTgsImlhdCI6MTc0NjIxMjcxOCwiZW1haWwiOiJhbmF2aGVvYmFhYnJhaGFtQGdtYWlsLmNvbSJ9.KlPxzoAHFEPAEyW6prybtZhRDuGoUpm7QsyQSP4g7VA"
+[{"id":"68171175b9fe46d77a759e0e","user_id":"6814f167d2265b3b4a1d6f97","name":"30 Minute Meeting","description":"A quick 30-minute meeting","duration":30,"color":"#FF0000","location_type":"video","meeting_link":"https://meet.google.com/abc-defg-hij","questions":["What is the purpose of this meeting?"],"availability_schedule_id":"68163f8871afc8750c86dda6","buffer_time":{"before":5,"after":5},"min_booking_notice":60,"max_booking_notice":1440,"is_active":true,"created_at":"2025-05-04 7:04:21.582 +00:00:00","updated_at":"2025-05-04 7:04:21.582 +00:00:00"}]a@a:~/calendly$ 
+
+
+
+
+
+
+
+
+
+
+
+a@a:~/calendly$ curl -X PUT http://127.0.0.1:8080/api/calendar/event-types/68171175b9fe46d77a759e0e \
+  -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2ODE0ZjE2N2QyMjY1YjNiNGExZDZmOTciLCJleHAiOjE3NDY4MTc1MTgsImlhdCI6MTc0NjIxMjcxOCwiZW1haWwiOiJhbmF2aGVvYmFhYnJhaGFtQGdtYWlsLmNvbSJ9.KlPxzoAHFEPAEyW6prybtZhRDuGoUpm7QsyQSP4g7VA" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Updated Meeting",
+    "duration": 45
+  }'
+{"id":"68171175b9fe46d77a759e0e","user_id":"6814f167d2265b3b4a1d6f97","name":"30 Minute Meeting","description":"A quick 30-minute meeting","duration":30,"color":"#FF0000","location_type":"video","meeting_link":"https://meet.google.com/abc-defg-hij","questions":["What is the purpose of this meeting?"],"availability_schedule_id":"68163f8871afc8750c86dda6","buffer_time":{"before":5,"after":5},"min_booking_notice":60,"max_booking_notice":1440,"is_active":true,"created_at":"2025-05-04 7:04:21.582 +00:00:00","updated_at":"2025-05-04 7:04:21.582 +00:00:00"}a@a:~/calendly$ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+a@a:~/calendly$ curl -X DELETE http://127.0.0.1:8080/api/calendar/event-types/68171175b9fe46d77a759e0e \ 
+  -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2ODE0ZjE2N2QyMjY1YjNiNGExZDZmOTciLCJleHAiOjE3NDY4MTc1MTgsImlhdCI6MTc0NjIxMjcxOCwiZW1haWwiOiJhbmF2aGVvYmFhYnJhaGFtQGdtYWlsLmNvbSJ9.KlPxzoAHFEPAEyW6prybtZhRDuGoUpm7QsyQSP4g7VA"
+{"message":"Event type deleted successfully"}a@a:~/calendly$ 
+
